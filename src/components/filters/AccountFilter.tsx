@@ -1,6 +1,6 @@
 import { Account } from "@/lib/definitions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Select, { MultiValue } from 'react-select';
 
 interface AccountFilterProps {
@@ -20,12 +20,14 @@ export default function AccountFilter({
   accounts
 }: AccountFilterProps) {
   const [selectedAccounts, setSelectedAccounts] = useState<OptionType[]>([]);
-  const accountOptions = accounts.map((account) => ({
+  const accountOptions = useMemo(() => {
+    return accounts.map((account) => ({
     id: account.id,
     value: account.id,
     label: account.name,
     userName: account.user.name
   }));
+}, [accounts]);
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -38,7 +40,7 @@ export default function AccountFilter({
     );
 
     setSelectedAccounts(newSelectedAccounts);
-  }, [searchParams]);
+  }, [searchParams, accountOptions]);
 
 
   const handleSelectionChange = (

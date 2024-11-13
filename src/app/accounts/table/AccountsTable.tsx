@@ -15,6 +15,58 @@ type GroupedAccounts = {
   accounts: Account[]
 }
 
+type GroupedAccountsMap = {
+  [bankName: string]: { [userId: number]: Account[] }
+};
+
+  // Takes the accounts array and groups them by bankName and userId.
+  // example return { Chase: { 2: [Account1] } } }
+  const groupAccountsByBankAndUser = (accounts: Account[]): GroupedAccountsMap => {
+    const grouped: { [bankName: string]: { [userId: number]: Account[] } } = {};
+
+    accounts.forEach(account => {
+      if (!grouped[account.bankName]) {
+        grouped[account.bankName] = {};
+      }
+
+      if (!grouped[account.bankName][account.user.id]) {
+        grouped[account.bankName][account.user.id] = [];
+      }
+      grouped[account.bankName][account.user.id].push(account);
+    });
+
+    return grouped;
+  };
+
+  // Sorts an array of accounts by their name property
+  const sortAccountsByName = (accounts: Account[]): Account[] => {
+    return accounts.sort((a, b) => a.name.localeCompare(b.name));
+  };
+
+  // Converts a grouped accounts object into an array of GroupedAccounts
+  // while also sorting the accounts within each group
+  const convertGroupedToArray = (
+    grouped: { [bankName: string]: { [userId: number]: Account[] } }
+  ): GroupedAccounts[] => {
+    const result: GroupedAccounts[] = [];
+
+    Object.keys(grouped).forEach(bankName => {
+      Object.keys(grouped[bankName]).forEach(userId => {
+        const userIdInt = parseInt(userId, 10);
+        // Sort the accounts by account name before pushing to result
+        const sortedAccounts = sortAccountsByName(grouped[bankName][userIdInt]);
+
+        result.push({
+          bankName,
+          userId: userIdInt,
+          accounts: sortedAccounts
+        });
+      });
+    });
+
+    return result;
+  };
+
 export default function AccountsTable({
   accounts,
   users,
@@ -91,58 +143,6 @@ export default function AccountsTable({
       }
       return false;
     }
-  };
-
-  type GroupedAccountsMap = {
-    [bankName: string]: { [userId: number]: Account[] }
-  };
-
-  // Takes the accounts array and groups them by bankName and userId.
-  // example return { Chase: { 2: [Account1] } } }
-  const groupAccountsByBankAndUser = (accounts: Account[]): GroupedAccountsMap => {
-    const grouped: { [bankName: string]: { [userId: number]: Account[] } } = {};
-
-    accounts.forEach(account => {
-      if (!grouped[account.bankName]) {
-        grouped[account.bankName] = {};
-      }
-
-      if (!grouped[account.bankName][account.user.id]) {
-        grouped[account.bankName][account.user.id] = [];
-      }
-      grouped[account.bankName][account.user.id].push(account);
-    });
-
-    return grouped;
-  };
-
-  // Sorts an array of accounts by their name property
-  const sortAccountsByName = (accounts: Account[]): Account[] => {
-    return accounts.sort((a, b) => a.name.localeCompare(b.name));
-  };
-
-  // Converts a grouped accounts object into an array of GroupedAccounts
-  // while also sorting the accounts within each group
-  const convertGroupedToArray = (
-    grouped: { [bankName: string]: { [userId: number]: Account[] } }
-  ): GroupedAccounts[] => {
-    const result: GroupedAccounts[] = [];
-
-    Object.keys(grouped).forEach(bankName => {
-      Object.keys(grouped[bankName]).forEach(userId => {
-        const userIdInt = parseInt(userId, 10);
-        // Sort the accounts by account name before pushing to result
-        const sortedAccounts = sortAccountsByName(grouped[bankName][userIdInt]);
-
-        result.push({
-          bankName,
-          userId: userIdInt,
-          accounts: sortedAccounts
-        });
-      });
-    });
-
-    return result;
   };
 
   const shouldDisplayUser = users.length > 1;

@@ -19,7 +19,7 @@ export default function CategorizationConditionRow({
     <div className="flex flex-col space-y-1 p-3 bg-gray-100 rounded-lg shadow-sm">
       <div className="text-lg font-medium">
         <span>
-          when transaction
+          when transaction&#39;s
         </span>
         <span className="ml-1 font-semibold">
           {condition.transactionField}

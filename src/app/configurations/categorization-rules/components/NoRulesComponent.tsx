@@ -14,7 +14,7 @@ export default function NoRulesComponent({
                       bg-white shadow-lg"
     >
       <p className="text-lg text-center mb-12">
-        You don't have any auto-categorization rules configured yet!</p>
+        You don&#39;t have any auto-categorization rules configured yet!</p>
       <AddRuleButton
         label={"Add one now"}
         onClick={onAddNewRule}

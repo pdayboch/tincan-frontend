@@ -1,7 +1,7 @@
 "use client"
 import clsx from 'clsx';
 import { Inter } from "next/font/google";
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import Select, { SingleValue } from 'react-select';
 import { Account, Category } from '@/lib/definitions';
 import { fetchCategories } from '@/lib/api/category-api';
@@ -66,7 +66,7 @@ const timeRanges: TimeRangesType[] = [
   }
 ]
 
-export default function Page() {
+function TrendsContent() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRangesType>(timeRanges[1]);
@@ -169,5 +169,13 @@ export default function Page() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TrendsContent/>
+    </Suspense>
   );
 }

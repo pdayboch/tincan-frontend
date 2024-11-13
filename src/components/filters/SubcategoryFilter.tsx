@@ -1,6 +1,6 @@
 import { Category } from "@/lib/definitions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Select, { MultiValue } from 'react-select';
 
 interface SubcategoryFilterProps {
@@ -26,7 +26,8 @@ export default function SubcategoryFilter({
 }: SubcategoryFilterProps) {
   const [selectedSubcategories, setSelectedSubcategories] = useState<OptionType[]>([]);
 
-  const categoryOptions: GroupedOptionType[] = categories.map(
+  const categoryOptions: GroupedOptionType[] = useMemo(() => {
+    return categories.map(
     category => ({
       id: category.id,
       label: category.name,
@@ -35,8 +36,8 @@ export default function SubcategoryFilter({
         value: subcategory.id,
         label: subcategory.name,
       })),
-    })
-  );
+    }));
+  }, [categories]);
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -52,7 +53,7 @@ export default function SubcategoryFilter({
     );
 
     setSelectedSubcategories(newSelectedSubcategories);
-  }, [searchParams]);
+  }, [searchParams, categoryOptions]);
 
   const handleSelectionChange = (
     selectedOptions: MultiValue<OptionType>

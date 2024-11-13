@@ -1,6 +1,6 @@
 import { User } from "@/lib/definitions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Select, { MultiValue } from 'react-select';
 
 interface UserFilterProps {
@@ -19,11 +19,13 @@ export default function UserFilter({
   users
 }: UserFilterProps) {
   const [selectedUsers, setSelectedUsers] = useState<OptionType[]>([]);
-  const userOptions = users.map((user) => ({
+  const userOptions = useMemo(() => {
+    return users.map((user) => ({
     id: user.id,
     value: user.id,
     label: user.name,
-  }));
+  }))
+}, [users]);
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -36,7 +38,7 @@ export default function UserFilter({
     );
 
     setSelectedUsers(newSelectedUsers);
-  }, [searchParams]);
+  }, [searchParams, userOptions]);
 
 
   const handleSelectionChange = (

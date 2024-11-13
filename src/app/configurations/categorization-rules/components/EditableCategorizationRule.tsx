@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { TrashIcon, ArrowUturnLeftIcon, CheckIcon } from '@heroicons/react/24/solid';
 import EditableCategorizationCondition from './EditableCategorizationCondition';
 import { AddConditionButton } from './AddConditionButton';
@@ -56,17 +56,17 @@ export default function EditableCategorizationRule({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setIsSubcategoryValid(checkSubcategoryValid());
-  }, [localSubcategory]);
-
-  const checkSubcategoryValid = (): boolean => {
+  const checkSubcategoryValid = useCallback((): boolean => {
     return categories.some(category =>
       category.subcategories.some(subcategory =>
         subcategory.id === localSubcategory.id
       )
     );
-  };
+  }, [categories, localSubcategory]);
+
+  useEffect(() => {
+    setIsSubcategoryValid(checkSubcategoryValid());
+  }, [checkSubcategoryValid]);
 
   // Validate subcategory with error setting (for save action)
   const validateSubcategoryOnSave = () => {
