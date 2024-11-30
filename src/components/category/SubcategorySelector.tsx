@@ -5,6 +5,7 @@ interface SubcategorySelectorProps {
   categories: Category[],
   currentSubcategory: { id: number, name: string } | null;
   onChange: (subcategory: { id: number, name: string }) => void;
+  hasError?: boolean;
 }
 
 type OptionType = {
@@ -20,7 +21,8 @@ type GroupedOptionType = {
 export default function SubcategorySelector({
   categories,
   currentSubcategory,
-  onChange
+  onChange,
+  hasError = false
 }: SubcategorySelectorProps) {
   const categoryOptions: GroupedOptionType[] = categories.map(
     category => ({
@@ -52,6 +54,17 @@ export default function SubcategorySelector({
       placeholder="Select subcategory"
       onChange={handleSelectionChange}
       value={selectedOption}
+      classNamePrefix="subcategory-selector"
+      className={hasError ? 'error' : ''}
+      styles={{
+        control: (provided) => ({
+          ...provided,
+          borderColor: hasError ? 'red' : provided.borderColor,
+          '&:hover': {
+            borderColor: hasError ? 'red' : provided.borderColor
+          }
+        })
+      }}
     />
   );
 }
