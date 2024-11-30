@@ -7,7 +7,7 @@ import { parseISO } from 'date-fns';
 import { Category, Transaction, TransactionUpdate } from "@/lib/definitions";
 import { formatCurrency } from '@/lib/helpers';
 import SubcategorySelector from '@/components/category/SubcategorySelector';
-import { amountClass } from '../../helpers';
+import { amountClass } from '../../transaction-helpers';
 
 interface EditableTransactionRowProps {
   transaction: Transaction;

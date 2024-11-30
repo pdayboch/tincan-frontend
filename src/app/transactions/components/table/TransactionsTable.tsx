@@ -13,6 +13,7 @@ interface TransactionsTableProps {
   categories: Category[];
   accounts: Account[];
   setTransactions: React.Dispatch<React.SetStateAction<Transaction[]>>;
+  onClickSplitTransaction: (transactionId: number) => void; 
 }
 
 export default function TransactionsTable({
@@ -20,7 +21,8 @@ export default function TransactionsTable({
   transactionMetaData,
   categories,
   accounts,
-  setTransactions
+  setTransactions,
+  onClickSplitTransaction
 }: TransactionsTableProps) {
   const [expandedRowTransactionId, setExpandedRowTransactionId] = useState<number | null>(null);
 
@@ -110,7 +112,7 @@ export default function TransactionsTable({
                     transaction={transaction}
                     accounts={accounts}
                     setExpandedRowTransactionId={setExpandedRowTransactionId}
-                    onUpdateTransaction={handleUpdateTransaction}
+                    onClickSplitTransaction={onClickSplitTransaction}
                   />
                 </React.Fragment>
               );

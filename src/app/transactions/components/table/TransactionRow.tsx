@@ -2,27 +2,31 @@ import { BarsArrowDownIcon } from "@heroicons/react/24/outline";
 import { Transaction } from "@/lib/definitions";
 import { formatCurrency, formatDate } from '@/lib/helpers';
 import clsx from "clsx";
-import { amountClass } from "../../helpers";
+import { amountClass } from "../../transaction-helpers";
 
 interface TransactionRowProps {
   transaction: Transaction;
-  onClick: (event: React.MouseEvent<HTMLTableRowElement>) => void;
+  onClick?: (event: React.MouseEvent<HTMLTableRowElement>) => void;
+  isInteractive?: boolean;
 };
 
 export default function TransactionRow({
   transaction,
-  onClick
+  onClick,
+  isInteractive = true
 }: TransactionRowProps) {
   return (
     <tr
       key={transaction.id}
-      onClick={onClick}
-      className="bg-white hover:bg-slate-100 w-full border-b cursor-pointer
-      text-sm last-of-type:border-none
-      [&:first-child>td:first-child]:rounded-tl-lg
-      [&:first-child>td:last-child]:rounded-tr-lg
-      [&:last-child>td:first-child]:rounded-bl-lg
-      [&:last-child>td:last-child]:rounded-br-lg"
+      onClick={isInteractive ? onClick : undefined}
+      className={clsx(
+        "bg-white w-full border-b text-sm last-of-type:border-none",
+        "[&:first-child>td:first-child]:rounded-tl-lg",
+        "[&:first-child>td:last-child]:rounded-tr-lg",
+        "[&:last-child>td:first-child]:rounded-bl-lg",
+        "[&:last-child>td:last-child]:rounded-br-lg",
+        isInteractive ? "hover:bg-slate-100 cursor-pointer" : ""
+      )}
     >
       {/* Date */}
       <td className="w-24 p-2 align-top whitespace-nowrap">
@@ -49,9 +53,11 @@ export default function TransactionRow({
       </td>
 
       {/* Expand button */}
-      <td className="w-4 whitespace-nowrap">
-        <BarsArrowDownIcon className="w-4 h-4" />
-      </td>
+      { isInteractive && (
+        <td className="w-4 whitespace-nowrap">
+          <BarsArrowDownIcon className="w-4 h-4" />
+        </td>
+      )}
     </tr>
   );
 }

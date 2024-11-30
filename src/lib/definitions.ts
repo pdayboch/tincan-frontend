@@ -72,41 +72,59 @@ export type SupportedAccount = {
 }
 
 export type Transaction = {
-  id: number,
-  transactionDate: string,
-  statementTransactionDate: string,
-  amount: number,
-  description: string,
-  statementDescription: string,
-  notes: string,
-  account: { id: number, bank: string, name: string }
-  user: { id: number, name: string },
-  category: { id: number, name: string },
-  subcategory: { id: number, name: string }
+  id: number;
+  amount: string;
+  description: string;
+  notes: string | null;
+  transactionDate: string;
+  statementTransactionDate: string | null;
+  statementDescription: string | null;
+  splitFromId: number | null;
+  hasSplits: boolean;
+  account: {
+    id: number;
+    bank: string;
+    name: string;
+  };
+  user: {
+    id: number;
+    name: string;
+  };
+  category: {
+    id: number;
+    name: string;
+  };
+  subcategory: {
+    id: number;
+    name: string;
+  };
 }
 
 export type TransactionMetaData = {
-  totalCount: number,
-  filteredCount: number,
-  prevPage: string | null
-  nextPage: string | null
+  totalCount: number;
+  filteredCount: number;
+  prevPage: string | null;
+  nextPage: string | null;
 }
 
 export type TransactionsResponse = {
-  meta: TransactionMetaData,
-  transactions: Transaction[]
+  meta: TransactionMetaData;
+  transactions: Transaction[];
 }
 
 export type TransactionUpdate = Partial<{
   // Include only the fields that can be updated
   transactionDate: string;
-  amount: number;
+  amount: string;
   description: string;
-  accountId: number,
-  statementId: number,
   notes: string;
   subcategoryId: number;
 }>;
+
+export type TransactionSplit = {
+  original: Transaction;
+  splits: Transaction[];
+}
 
 export type TransactionTrendOverTime = {
   date: string;
@@ -114,7 +132,7 @@ export type TransactionTrendOverTime = {
 }[];
 
 export type User = {
-  id: number,
-  name: string,
-  email: string
+  id: number;
+  name: string;
+  email: string;
 }

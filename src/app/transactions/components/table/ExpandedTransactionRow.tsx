@@ -1,4 +1,4 @@
-import { Account, Transaction, TransactionUpdate } from "@/lib/definitions";
+import { Account, Transaction } from "@/lib/definitions";
 import { formatAccountLabel } from "@/lib/helpers";
 import { ChevronDoubleUpIcon } from "@heroicons/react/24/outline";
 
@@ -6,19 +6,22 @@ interface ExpandedTransactionRowProps {
   transaction: Transaction;
   accounts: Account[];
   setExpandedRowTransactionId: React.Dispatch<React.SetStateAction<number | null>>;
-  onUpdateTransaction: (transactionId: number, data: TransactionUpdate) => void;
+  onClickSplitTransaction: (transactionId: number) => void;
 };
 
 export default function ExpandedTransactionRow({
   transaction,
   accounts,
   setExpandedRowTransactionId,
-  onUpdateTransaction
+  onClickSplitTransaction
 }: ExpandedTransactionRowProps) {
 
   const account = accounts.find(a =>
     a.id === transaction.account.id
   );
+
+  const isPartOfSplit = transaction.hasSplits || transaction.splitFromId !== null;
+  const originalSplitId = transaction.splitFromId ?? transaction.id;
 
   return (
     <tr className="expanded-row bg-neutral-50" >
@@ -37,7 +40,12 @@ export default function ExpandedTransactionRow({
               <b>Appears on statement as </b>
               {transaction.statementDescription}
             </p>
-            <span>Split transaction</span>
+            <button
+              className="text-blue-600 hover:underline cursor-pointer"
+              onClick={() => onClickSplitTransaction(originalSplitId)}
+            >
+              <span>{isPartOfSplit ? "Manage transaction split" : "Split transaction"}</span>
+            </button>
           </div>
 
           {/* Collapse Button */}

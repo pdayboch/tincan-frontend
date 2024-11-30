@@ -1,14 +1,22 @@
 import { Account } from "./definitions";
 
 // Helper function to format amount as dollar value
-export const formatCurrency = (amount: number) => {
+export const formatCurrency = (amount: string | number): string => {
+  // Convert input to a number
+  const numericAmount = typeof amount === 'number' ? amount : parseFloat(amount);
+
+  // Return string as is for NaN cases
+  if (isNaN(numericAmount)) {
+    return amount.toString();
+  }
+
   const formattedAmount = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2,
-  }).format(Math.abs(amount));
+  }).format(Math.abs(numericAmount));
 
-  return amount < 0 ? `-${formattedAmount}` : `${formattedAmount}`;
+  return numericAmount < 0 ? `-${formattedAmount}` : formattedAmount;
 };
 
 export const formatDate = (dateString: string) => {

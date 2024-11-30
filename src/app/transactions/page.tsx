@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, useCallback } from 'react'
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import Search from '@/components/Search';
 import { AddTransactionButton } from './components/buttons';
@@ -14,9 +14,11 @@ import { fetchTransactions } from '@/lib/api/transaction-api';
 import SubcategoryFilter from '@/components/filters/SubcategoryFilter';
 import AccountFilter from '@/components/filters/AccountFilter';
 import UserFilter from '@/components/filters/UserFilter';
+import TransactionSplitsModal from './components/splits/TransactionSplitsModal';
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 function TransactionsContent() {
+  const [activeTransactionSplitId, setActiveTransactionSplitId] = useState<number | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [transactionMetaData, setTransactionMetaData] =
     useState<TransactionMetaData>({
@@ -46,6 +48,23 @@ function TransactionsContent() {
     }
     replace(`${pathname}?${params.toString()}`)
   }
+
+  const fetchTransactionsData = useCallback(() => {
+    fetchTransactions(searchParams)
+      .then(data => {
+        setTransactions(data.transactions);
+        setTransactionMetaData({
+          totalCount: data.meta.totalCount,
+          filteredCount: data.meta.filteredCount,
+          prevPage: data.meta.prevPage,
+          nextPage: data.meta.nextPage
+        });
+      })
+      .catch(error => {
+        console.error(error);
+        setTransactions([]);
+      });
+  }, [searchParams]);
 
   // fetch and store all users
   useEffect(() => {
@@ -85,21 +104,16 @@ function TransactionsContent() {
 
   // fetch and store filtered transactions
   useEffect(() => {
-    fetchTransactions(searchParams)
-      .then(data => {
-        setTransactions(data.transactions);
-        setTransactionMetaData({
-          totalCount: data.meta.totalCount,
-          filteredCount: data.meta.filteredCount,
-          prevPage: data.meta.prevPage,
-          nextPage: data.meta.nextPage
-        });
-      })
-      .catch(error => {
-        console.error(error);
-        setTransactions([]);
-      });
-  }, [searchParams]);
+    fetchTransactionsData();
+  }, [fetchTransactionsData]);
+
+  const handleTransactionSplitsModalClose = (refresh: boolean) => {
+    setActiveTransactionSplitId(null);
+    if (refresh) {
+      // Refresh transactions if splits were saved
+      fetchTransactionsData();
+    }
+  };
 
   return (
     <div className={clsx("flex flex-col p-6 max-w-6xl mx-auto", font.className)}>
@@ -146,7 +160,7 @@ function TransactionsContent() {
         {/* Transaction Count Display */}
         <div className="text-sm text-gray-600 px-4">
           {transactionMetaData.filteredCount < transactionMetaData.totalCount
-            ? `Showing ${transactionMetaData.filteredCount} of ${transactionMetaData.totalCount} transactions`
+            ? `Filter returning ${transactionMetaData.filteredCount} of ${transactionMetaData.totalCount} transactions`
             : `Total transactions: ${transactionMetaData.totalCount}`}
         </div>
 
@@ -157,8 +171,18 @@ function TransactionsContent() {
           categories={categories}
           accounts={accounts}
           setTransactions={setTransactions}
+          onClickSplitTransaction={(transactionId) => setActiveTransactionSplitId(transactionId)}
         />
       </div>
+
+      {/* Conditionally render the TransactionSplitsModal */}
+      {activeTransactionSplitId && (
+        <TransactionSplitsModal
+          transactionId={activeTransactionSplitId}
+          categories={categories}
+          onClose={handleTransactionSplitsModalClose}
+        />
+      )}
     </div>
   );
 }
