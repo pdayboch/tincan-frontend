@@ -1,5 +1,9 @@
 import { Category } from "@/lib/definitions";
 import Select, { SingleValue } from 'react-select';
+import clsx from 'clsx';
+import { Inter } from "next/font/google";
+
+const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 interface SubcategorySelectorProps {
   categories: Category[],
@@ -55,16 +59,39 @@ export default function SubcategorySelector({
       onChange={handleSelectionChange}
       value={selectedOption}
       classNamePrefix="subcategory-selector"
-      className={hasError ? 'error' : ''}
+      className={clsx(hasError ? 'error' : '')}
       styles={{
         control: (provided) => ({
           ...provided,
           borderColor: hasError ? 'red' : provided.borderColor,
+          fontFamily: font.style.fontFamily,
           '&:hover': {
             borderColor: hasError ? 'red' : provided.borderColor
           }
+        }),
+        singleValue: (provided) => ({
+          ...provided,
+          fontFamily: font.style.fontFamily
+        }),
+        placeholder: (provided) => ({
+          ...provided,
+          fontFamily: font.style.fontFamily
+        }),
+        menu: (provided) => ({
+          ...provided,
+          fontFamily: font.style.fontFamily
+        }),
+        option: (provided) => ({
+          ...provided,
+          fontFamily: font.style.fontFamily
+        }),
+        menuPortal: (provided) => ({
+          ...provided,
+          zIndex: 9999
         })
       }}
+      menuPortalTarget={document.body}
+      menuPosition="fixed"
     />
   );
 }
