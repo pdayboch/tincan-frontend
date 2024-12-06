@@ -1,0 +1,17 @@
+/build_and_push.sh
+Dockerfile
+README.md
+
+# Ignore git directory.
+/.git/
+/.gitignore
+
+# Ignore all environment files (except templates).
+/.env*
+!/.env*.template
+
+# Build and temporary files
+.next/
+
+# Node modules - installed via Dockerfile
+node_modules/
