@@ -36,6 +36,7 @@ function CategorizationRulesContent() {
   const [filteredRules, setFilteredRules] = useState<CategorizationRule[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isAddingNewRule, setIsAddingNewRule] = useState(false);
   const [editingRule, setEditingRule] = useState<CategorizationRule | null>(null);
 
@@ -96,6 +97,18 @@ function CategorizationRulesContent() {
       .catch(error => {
         console.error(error);
         setAccounts([]);
+      });
+  }, []);
+
+  // fetch and store all users
+  useEffect(() => {
+    fetchUsers()
+      .then(data => {
+        setUsers(data);
+      })
+      .catch(error => {
+        console.error(error);
+        setUsers([]);
       });
   }, []);
 
@@ -187,6 +200,7 @@ function CategorizationRulesContent() {
             </label>
             <AccountFilter
               accounts={accounts}
+              users={users}
             />
           </div>
           <div className="flex flex-col w-1/2">

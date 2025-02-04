@@ -1,15 +1,17 @@
-import { Account } from "@/lib/definitions";
+import { Account, User } from "@/lib/definitions";
+import { findUserName } from "@/lib/helpers";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import Select, { MultiValue } from 'react-select';
 
 interface AccountFilterProps {
   accounts: Account[];
+  users: User[];
 }
 
 type OptionType = {
-  id: number;
-  value: number,
+  id: string;
+  value: string,
   label: string,
   userName: string;
 };
@@ -17,17 +19,18 @@ type OptionType = {
 const PARAM_NAME = 'accounts[]';
 
 export default function AccountFilter({
-  accounts
+  accounts,
+  users
 }: AccountFilterProps) {
   const [selectedAccounts, setSelectedAccounts] = useState<OptionType[]>([]);
   const accountOptions = useMemo(() => {
     return accounts.map((account) => ({
-    id: account.id,
-    value: account.id,
-    label: account.name,
-    userName: account.user.name
-  }));
-}, [accounts]);
+      id: account.id,
+      value: account.id,
+      label: account.name,
+      userName: findUserName(users, account.userId)
+    }));
+  }, [accounts]);
 
   const searchParams = useSearchParams();
   const pathname = usePathname();

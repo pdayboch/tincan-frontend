@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { Inter } from "next/font/google";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import Select, { SingleValue } from 'react-select';
-import { Account, Category } from '@/lib/definitions';
+import { Account, Category, User } from '@/lib/definitions';
 import { fetchCategories } from '@/lib/api/category-api';
 import { fetchAccounts } from '@/lib/api/account-api';
 import AccountFilter from '@/components/filters/AccountFilter';
@@ -11,6 +11,7 @@ import SubcategoryFilter from '@/components/filters/SubcategoryFilter';
 import TrendMenu, { TrendOption } from './TrendMenu';
 import OverTimeChart from './OverTimeChart';
 import { getStartAndEndDates } from './utils/date-helpers';
+import { fetchUsers } from '@/lib/api/user-api';
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 const trendOptions: TrendOption[] = [
@@ -68,6 +69,7 @@ const timeRanges: TimeRangesType[] = [
 
 function TrendsContent() {
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRangesType>(timeRanges[1]);
   const [selectedTrend, setSelectedTrend] = useState<{
@@ -85,6 +87,18 @@ function TrendsContent() {
       .catch(error => {
         console.error(error);
         setCategories([]);
+      });
+  }, []);
+
+  // fetch and store all users
+  useEffect(() => {
+    fetchUsers()
+      .then(data => {
+        setUsers(data);
+      })
+      .catch(error => {
+        console.error(error);
+        setUsers([]);
       });
   }, []);
 
@@ -134,6 +148,7 @@ function TrendsContent() {
           <div className="w-1/3">
             <AccountFilter
               accounts={accounts}
+              users={users}
             />
           </div>
 
@@ -175,7 +190,7 @@ function TrendsContent() {
 export default function Page() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <TrendsContent/>
+      <TrendsContent />
     </Suspense>
   );
 }

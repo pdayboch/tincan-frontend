@@ -145,6 +145,7 @@ function TransactionsContent() {
             </label>
             <AccountFilter
               accounts={accounts}
+              users={users}
             />
           </div>
           <div className="flex flex-col w-1/3">

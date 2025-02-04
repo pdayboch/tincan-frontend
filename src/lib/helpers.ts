@@ -1,4 +1,4 @@
-import { Account } from "./definitions";
+import { Account, User } from "./definitions";
 
 // Helper function to format amount as dollar value
 export const formatCurrency = (amount: string | number): string => {
@@ -40,4 +40,8 @@ export const formatAccountLabel = (
 
   if (account.institutionName) return `${account.institutionName} ${account.name}`;
   return `${account.name}`;
+};
+
+export const findUserName = (users: User[], userId: string): string => {
+  return users.find(user => user.id === userId)?.name ?? '';
 };
