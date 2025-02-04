@@ -1,20 +1,20 @@
 export type Account = {
-  id: number,
-  bankName: string,
+  id: string,
   name: string,
+  institutionName: string,
   accountType: string,
+  accountSubtype: string,
+  currentBalance: string,
   active: boolean,
   deletable: boolean,
-  user: { id: number, name: string },
-  statementDirectory: string,
-  nickname: string
+  userId: string,
+  statementDirectory: string
 }
 
 export type AccountUpdate = Partial<{
   // Include only the fields that can be updated
   active: boolean;
   statementDirectory: string;
-  nickname: string;
 }>;
 
 export type CategorizationRule = {
@@ -76,20 +76,14 @@ export type Transaction = {
   amount: string;
   description: string;
   notes: string | null;
+  pending: boolean;
+  accountId: string;
   transactionDate: string;
   statementTransactionDate: string | null;
   statementDescription: string | null;
   splitFromId: number | null;
   hasSplits: boolean;
-  account: {
-    id: number;
-    bank: string;
-    name: string;
-  };
-  user: {
-    id: number;
-    name: string;
-  };
+  userId: string;
   category: {
     id: number;
     name: string;
@@ -132,7 +126,7 @@ export type TransactionTrendOverTime = {
 }[];
 
 export type User = {
-  id: number;
+  id: string;
   name: string;
   email: string;
 }
