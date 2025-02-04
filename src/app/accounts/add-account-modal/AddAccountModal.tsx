@@ -8,7 +8,7 @@ interface AddAccountModalProps {
   users: User[];
   onAddAccount: (
     accountProvider: SupportedAccount,
-    userId: number,
+    userId: string,
     statementDirectory: string,
   ) => void;
   onCloseModal: () => void;
@@ -45,7 +45,7 @@ export default function AddAccountModal({
     setSelectedAccount(account);
   };
 
-  const handleAddAccount = (userId: number, statementDirectory: string) => {
+  const handleAddAccount = (userId: string, statementDirectory: string) => {
     if (selectedAccount) {
       onAddAccount(
         selectedAccount,

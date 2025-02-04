@@ -6,7 +6,7 @@ import { SupportedAccount, User } from '@/lib/definitions';
 interface AccountDetailsScreenProps {
   users: User[];
   selectedAccount: SupportedAccount;
-  onAddAccount: (userId: number, statementDirectory: string) => void;
+  onAddAccount: (userId: string, statementDirectory: string) => void;
   onBackButtonClick: () => void;
 }
 
@@ -16,7 +16,7 @@ export default function AccountDetailsScreen({
   onAddAccount,
   onBackButtonClick
 }: AccountDetailsScreenProps) {
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [statementDirectory, setStatementDirectory] = useState<string>('');
 
   const handleAddAccount = () => {
@@ -50,7 +50,7 @@ export default function AccountDetailsScreen({
           id='user-select'
           value={selectedUserId ? selectedUserId : ''}
           onChange={(e) => {
-            const userId = Number(e.target.value);
+            const userId = e.target.value;
             setSelectedUserId(userId);
           }}
         >

@@ -58,7 +58,7 @@ function AccountsContent() {
 
   const handleAddAccount = async (
     accountProvider: SupportedAccount,
-    userId: number,
+    userId: string,
     statementDirectory: string
   ): Promise<boolean> => {
     try {

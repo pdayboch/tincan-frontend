@@ -5,8 +5,8 @@ import AccountModal from '../update-account-modal/UpdateAccountModal';
 
 type AccountSubRowProps = {
   account: Account;
-  onUpdateAccount: (accountId: number, data: AccountUpdate) => void;
-  onDeleteAccount: (accountId: number) => void;
+  onUpdateAccount: (accountId: string, data: AccountUpdate) => void;
+  onDeleteAccount: (accountId: string) => void;
 };
 
 export default function AccountSubRow({

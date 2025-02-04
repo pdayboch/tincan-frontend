@@ -13,12 +13,13 @@ export async function fetchAccounts(): Promise<Account[]> {
   if (!response.ok) {
     throw new Error(`Error fetching accounts: ${response.status}`);
   }
+
   const data: Account[] = await response.json();
   return data;
 }
 
 export async function updateAccount(
-  accountId: number,
+  accountId: string,
   updates: AccountUpdate
 ): Promise<Account> {
   const url = `${getBaseApiUrl()}/accounts/${accountId}`;
@@ -29,17 +30,19 @@ export async function updateAccount(
     },
     body: JSON.stringify(updates)
   });
+
   if (!response.ok) {
     const errorMessage = await response.text();
     throw new Error(`Error updating account: ${errorMessage}`)
   }
+
   const data: Account = await response.json();
   return data;
 }
 
 export async function createAccount(
   accountProvider: string,
-  userId: number,
+  userId: string,
   statementDirectory: string
 ): Promise<Account> {
   const url = `${getBaseApiUrl()}/accounts`;
@@ -54,16 +57,18 @@ export async function createAccount(
       statementDirectory: statementDirectory
     })
   });
+
   if (!response.ok) {
     const errorMessage = await response.text();
     throw new Error(`Error Creating Account: ${errorMessage}`)
   }
+
   const data: Account = await response.json();
   return data;
 }
 
 export async function deleteAccount(
-  accountId: number,
+  accountId: string,
 ): Promise<boolean> {
   const url = `${getBaseApiUrl()}/accounts/${accountId}`;
   const response = await fetch(url, {
@@ -72,10 +77,12 @@ export async function deleteAccount(
       'Content-Type': 'application/json'
     },
   });
+
   if (!response.ok) {
     const errorMessage = await response.text();
     throw new Error(`Error deleting account: ${errorMessage}`)
   }
+
   return true;
 }
 
@@ -87,9 +94,11 @@ export async function fetchSupportedAccounts(): Promise<SupportedAccount[]> {
       'Content-Type': 'application/json'
     },
   });
+
   if (!response.ok) {
     throw new Error(`Error fetching supported accounts: ${response.status}`);
   }
+
   const data: SupportedAccount[] = await response.json();
   return data;
 }

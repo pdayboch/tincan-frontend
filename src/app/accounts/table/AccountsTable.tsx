@@ -10,62 +10,61 @@ type AccountsTableProps = {
 }
 
 type GroupedAccounts = {
-  bankName: string,
-  userId: number,
+  institutionName: string,
+  userId: string,
   accounts: Account[]
 }
 
 type GroupedAccountsMap = {
-  [bankName: string]: { [userId: number]: Account[] }
+  [bankName: string]: { [userId: string]: Account[] }
 };
 
-  // Takes the accounts array and groups them by bankName and userId.
-  // example return { Chase: { 2: [Account1] } } }
-  const groupAccountsByBankAndUser = (accounts: Account[]): GroupedAccountsMap => {
-    const grouped: { [bankName: string]: { [userId: number]: Account[] } } = {};
+// Takes the accounts array and groups them by bankName and userId.
+// example return { Chase: { 2: [Account1] } } }
+const groupAccountsByBankAndUser = (accounts: Account[]): GroupedAccountsMap => {
+  const grouped: { [institutionName: string]: { [userId: string]: Account[] } } = {};
 
-    accounts.forEach(account => {
-      if (!grouped[account.bankName]) {
-        grouped[account.bankName] = {};
-      }
+  accounts.forEach(account => {
+    if (!grouped[account.institutionName]) {
+      grouped[account.institutionName] = {};
+    }
 
-      if (!grouped[account.bankName][account.user.id]) {
-        grouped[account.bankName][account.user.id] = [];
-      }
-      grouped[account.bankName][account.user.id].push(account);
-    });
+    if (!grouped[account.institutionName][account.userId]) {
+      grouped[account.institutionName][account.userId] = [];
+    }
+    grouped[account.institutionName][account.userId].push(account);
+  });
 
-    return grouped;
-  };
+  return grouped;
+};
 
-  // Sorts an array of accounts by their name property
-  const sortAccountsByName = (accounts: Account[]): Account[] => {
-    return accounts.sort((a, b) => a.name.localeCompare(b.name));
-  };
+// Sorts an array of accounts by their name property
+const sortAccountsByName = (accounts: Account[]): Account[] => {
+  return accounts.sort((a, b) => a.name.localeCompare(b.name));
+};
 
-  // Converts a grouped accounts object into an array of GroupedAccounts
-  // while also sorting the accounts within each group
-  const convertGroupedToArray = (
-    grouped: { [bankName: string]: { [userId: number]: Account[] } }
-  ): GroupedAccounts[] => {
-    const result: GroupedAccounts[] = [];
+// Converts a grouped accounts object into an array of GroupedAccounts
+// while also sorting the accounts within each group
+const convertGroupedToArray = (
+  grouped: { [institutionName: string]: { [userId: string]: Account[] } }
+): GroupedAccounts[] => {
+  const result: GroupedAccounts[] = [];
 
-    Object.keys(grouped).forEach(bankName => {
-      Object.keys(grouped[bankName]).forEach(userId => {
-        const userIdInt = parseInt(userId, 10);
-        // Sort the accounts by account name before pushing to result
-        const sortedAccounts = sortAccountsByName(grouped[bankName][userIdInt]);
+  Object.keys(grouped).forEach(institutionName => {
+    Object.keys(grouped[institutionName]).forEach(userId => {
+      // Sort the accounts by account name before pushing to result
+      const sortedAccounts = sortAccountsByName(grouped[institutionName][userId]);
 
-        result.push({
-          bankName,
-          userId: userIdInt,
-          accounts: sortedAccounts
-        });
+      result.push({
+        institutionName,
+        userId,
+        accounts: sortedAccounts
       });
     });
+  });
 
-    return result;
-  };
+  return result;
+};
 
 export default function AccountsTable({
   accounts,
@@ -82,8 +81,8 @@ export default function AccountsTable({
 
       // Sort the result array by bankName and then by userId
       result.sort((a, b) => {
-        if (a.bankName < b.bankName) return -1;
-        if (a.bankName > b.bankName) return 1;
+        if (a.institutionName < b.institutionName) return -1;
+        if (a.institutionName > b.institutionName) return 1;
         if (a.userId < b.userId) return -1;
         if (a.userId > b.userId) return 1;
         return 0;
@@ -107,7 +106,7 @@ export default function AccountsTable({
   }
 
   const handleUpdateAccount = async (
-    accountId: number,
+    accountId: string,
     data: AccountUpdate
   ): Promise<boolean> => {
     try {
@@ -127,7 +126,7 @@ export default function AccountsTable({
     }
   };
 
-  const handleDeleteAccount = async (accountId: number): Promise<boolean> => {
+  const handleDeleteAccount = async (accountId: string): Promise<boolean> => {
     try {
       const success = await deleteAccount(accountId)
       if (success) {
@@ -165,7 +164,7 @@ export default function AccountsTable({
 
             return (
               <tr
-                key={`${bankAndUser.bankName}${bankAndUser.userId}`}
+                key={`${bankAndUser.institutionName}${bankAndUser.userId}`}
                 className="bg-white w-full border-b text-sm \
                     last-of-type:border-none \
                     [&:first-child>td:first-child]:rounded-tl-lg \
@@ -175,7 +174,7 @@ export default function AccountsTable({
               >
                 <td className="px-4 py-2 border-b border-gray-300 align-top">
                   <div>
-                    {bankAndUser.bankName}
+                    {bankAndUser.institutionName}
                     {user && (
                       <div className="text-md text-gray-500">
                         {user.name}

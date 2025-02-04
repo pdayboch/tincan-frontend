@@ -3,12 +3,13 @@ import { ThreeDots } from 'react-loader-spinner';
 import clsx from 'clsx';
 import { QuestionMarkCircleIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { Account, AccountUpdate } from '@/lib/definitions';
+import { formatAccountLabel } from '@/lib/helpers';
 
 type AccountModalProps = {
   account: Account;
   onClose: () => void;
-  onUpdateAccount: (accountId: number, data: AccountUpdate) => void;
-  onDeleteAccount: (accountId: number) => void;
+  onUpdateAccount: (accountId: string, data: AccountUpdate) => void;
+  onDeleteAccount: (accountId: string) => void;
 };
 
 export default function AccountModal({
@@ -54,9 +55,8 @@ export default function AccountModal({
 
   // Event handler for when delete button is clicked:
   const handleDeleteClick = () => {
-    const accountDisplayName = account.bankName ? `${account.bankName} ${account.name}` : account.name;
     const confirmation = window.confirm(
-      `Are you sure you want to delete ${accountDisplayName}?\n\nThis will delete all associated transactions. To keep the transactions but disable the account, click cancel and disable the account from the previous screen.`
+      `Are you sure you want to delete ${formatAccountLabel(account)}?\n\nThis will delete all associated transactions. To keep the transactions but disable the account, click cancel and disable the account from the previous screen.`
     );
     if (confirmation) {
       onDeleteAccount(account.id);
@@ -78,7 +78,7 @@ export default function AccountModal({
         <h2 className='text-2xl mb-4'>Account Details</h2>
 
         {/* Account Name */}
-        <p className='text-xl'>{account.bankName || ''} {account.name}</p>
+        <p className='text-xl'>{account.institutionName || ''} {account.name}</p>
 
         {/* Account Type */}
         <div className='mt-5 flex'>
