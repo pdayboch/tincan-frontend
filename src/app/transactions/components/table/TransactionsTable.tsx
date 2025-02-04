@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Account, Category, Transaction, TransactionMetaData, TransactionUpdate } from "@/lib/definitions";
+import {
+  Account,
+  Category,
+  Transaction,
+  TransactionMetaData,
+  TransactionUpdate,
+  User
+} from "@/lib/definitions";
 import TransactionsHeader from "./TransactionsHeader";
 import TransactionRow from "./TransactionRow";
 import EditableTransactionRow from "./EditableTransactionRow";
@@ -12,8 +19,9 @@ interface TransactionsTableProps {
   transactionMetaData: TransactionMetaData;
   categories: Category[];
   accounts: Account[];
+  users: User[];
   setTransactions: React.Dispatch<React.SetStateAction<Transaction[]>>;
-  onClickSplitTransaction: (transactionId: number) => void; 
+  onClickSplitTransaction: (transactionId: number) => void;
 }
 
 export default function TransactionsTable({
@@ -21,6 +29,7 @@ export default function TransactionsTable({
   transactionMetaData,
   categories,
   accounts,
+  users,
   setTransactions,
   onClickSplitTransaction
 }: TransactionsTableProps) {
@@ -92,6 +101,10 @@ export default function TransactionsTable({
     };
   }, [])
 
+  const findUserName = (userId: string): string => {
+    return users.find(user => user.id === userId)?.name ?? '';
+  };
+
   return (
     <div className="mt-6 inline-block min-w-full align-middle rounded-lg bg-gray-50 p-2">
       <table className="min-w-full text-gray-900 table-fixed">
@@ -111,6 +124,7 @@ export default function TransactionsTable({
                     key={`expanded-${transaction.id}`}
                     transaction={transaction}
                     accounts={accounts}
+                    userName={findUserName(transaction.userId)}
                     setExpandedRowTransactionId={setExpandedRowTransactionId}
                     onClickSplitTransaction={onClickSplitTransaction}
                   />

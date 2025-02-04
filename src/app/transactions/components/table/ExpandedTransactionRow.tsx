@@ -5,6 +5,7 @@ import { ChevronDoubleUpIcon } from "@heroicons/react/24/outline";
 interface ExpandedTransactionRowProps {
   transaction: Transaction;
   accounts: Account[];
+  userName: string;
   setExpandedRowTransactionId: React.Dispatch<React.SetStateAction<number | null>>;
   onClickSplitTransaction: (transactionId: number) => void;
 };
@@ -12,12 +13,13 @@ interface ExpandedTransactionRowProps {
 export default function ExpandedTransactionRow({
   transaction,
   accounts,
+  userName,
   setExpandedRowTransactionId,
   onClickSplitTransaction
 }: ExpandedTransactionRowProps) {
 
   const account = accounts.find(a =>
-    a.id === transaction.account.id
+    a.id === transaction.accountId
   );
 
   const isPartOfSplit = transaction.hasSplits || transaction.splitFromId !== null;
@@ -28,13 +30,14 @@ export default function ExpandedTransactionRow({
       <td colSpan={5}>
         <div className="flex justify-between w-full h-40">
           <div className="flex-none content-start mt-2 pl-2 flex flex-col text-sm">
+
             <p>
               <b>Custodian: </b>
-              {account?.user.name}
+              {userName}
             </p>
             <p>
               <b>Account: </b>
-              {formatAccountLabel(account, false)}
+              {formatAccountLabel(account)}
             </p>
             <p>
               <b>Appears on statement as </b>

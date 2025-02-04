@@ -12,8 +12,9 @@ export const EMPTY_TRANSACTION: Transaction = {
   statementDescription: null,
   splitFromId: null,
   hasSplits: false,
-  account: { id: 0, bank: '', name: '' },
-  user: { id: 0, name: '' },
+  accountId: '0',
+  userId: '0',
+  pending: false,
   category: { id: 0, name: '' },
   subcategory: { id: 0, name: '' }
 }

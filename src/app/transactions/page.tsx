@@ -170,6 +170,7 @@ function TransactionsContent() {
           transactionMetaData={transactionMetaData}
           categories={categories}
           accounts={accounts}
+          users={users}
           setTransactions={setTransactions}
           onClickSplitTransaction={(transactionId) => setActiveTransactionSplitId(transactionId)}
         />

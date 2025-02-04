@@ -28,7 +28,7 @@ export const getFormattedMatchValue = (
 ): string => {
   if (condition.transactionField === 'account') {
     const account = accounts.find(acc =>
-      acc.id === Number(condition.matchValue)
+      acc.id === condition.matchValue
     );
 
     if (account) return formatAccountLabel(account);

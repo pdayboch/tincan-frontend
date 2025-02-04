@@ -34,14 +34,10 @@ export function dateToString(date: Date): string {
 }
 
 export const formatAccountLabel = (
-  account: Account | undefined,
-  withCustodian: boolean = true
+  account: Account | undefined
 ): string => {
   if (!account) return '';
 
-  const custodian = withCustodian ? `${account.user.name} ` : '';
-
-  if (account.nickname) return `${custodian}${account.nickname}`;
-  if (account.bankName) return `${custodian}${account.bankName} ${account.name}`;
-  return `${custodian}${account.name}`;
+  if (account.institutionName) return `${account.institutionName} ${account.name}`;
+  return `${account.name}`;
 };
