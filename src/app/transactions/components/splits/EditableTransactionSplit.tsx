@@ -1,12 +1,12 @@
-import clsx from 'clsx';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { isValid, parseISO, format } from 'date-fns';
+import clsx from "clsx";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { isValid, parseISO, format } from "date-fns";
 import { Category, Transaction, TransactionUpdate } from "@/lib/definitions";
-import SubcategorySelector from '@/components/category/SubcategorySelector';
-import { amountClass } from '../../transaction-helpers';
-import { useEffect, useState } from 'react';
-import ErrorBadge from '@/components/errors/ErrorBadge';
+import SubcategorySelector from "@/components/category/SubcategorySelector";
+import { useEffect, useState } from "react";
+import ErrorBadge from "@/components/errors/ErrorBadge";
+import { amountClass } from "@/lib/style-helpers";
 
 interface EditableTransactionSplitProps {
   transaction: Transaction;
@@ -14,8 +14,8 @@ interface EditableTransactionSplitProps {
   categories: Category[];
   onUpdate: (data: TransactionUpdate) => void;
   onDelete: () => void;
-  onSubcategoryUpdate: (subcategory: { id: number, name: string }) => void;
-};
+  onSubcategoryUpdate: (subcategory: { id: number; name: string }) => void;
+}
 
 export default function EditableTransactionSplit({
   transaction,
@@ -23,23 +23,29 @@ export default function EditableTransactionSplit({
   categories,
   onUpdate,
   onDelete,
-  onSubcategoryUpdate
+  onSubcategoryUpdate,
 }: EditableTransactionSplitProps) {
   const [dateErrorMessage, setDateErrorMessage] = useState<string | null>(null);
-  const [descriptionErrorMessage, setDescriptionErrorMessage] = useState<string | null>(null);
-  const [subcategoryErrorMessage, setSubcategoryErrorMessage] = useState<string | null>(null);
-  const [amountErrorMessage, setAmountErrorMessage] = useState<string | null>(null);
+  const [descriptionErrorMessage, setDescriptionErrorMessage] = useState<
+    string | null
+  >(null);
+  const [subcategoryErrorMessage, setSubcategoryErrorMessage] = useState<
+    string | null
+  >(null);
+  const [amountErrorMessage, setAmountErrorMessage] = useState<string | null>(
+    null
+  );
 
   // Validation Logic
   const validateDate = (dateString: string | null): boolean => {
     if (!dateString) {
-      setDateErrorMessage('Transaction date is required');
+      setDateErrorMessage("Transaction date is required");
       return false;
     }
 
     const date = parseISO(dateString);
     if (!isValid(date)) {
-      setDateErrorMessage('Invalid date format');
+      setDateErrorMessage("Invalid date format");
       return false;
     } else {
       setDateErrorMessage(null);
@@ -55,9 +61,9 @@ export default function EditableTransactionSplit({
     }
   };
 
-  const validateSubcategory = (subcategory: { id: number, name: string }) => {
+  const validateSubcategory = (subcategory: { id: number; name: string }) => {
     if (subcategory.id === 0) {
-      setSubcategoryErrorMessage('Category selection required');
+      setSubcategoryErrorMessage("Category selection required");
     } else {
       setSubcategoryErrorMessage(null);
     }
@@ -65,7 +71,7 @@ export default function EditableTransactionSplit({
 
   const validateAmount = (amount: string) => {
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) === 0) {
-      setAmountErrorMessage('Enter a valid, non-zero amount')
+      setAmountErrorMessage("Enter a valid, non-zero amount");
     } else {
       setAmountErrorMessage(null);
     }
@@ -77,7 +83,8 @@ export default function EditableTransactionSplit({
     if (isNaN(parsedValue)) return "0.00";
 
     // Adjust the value to match the sign of the original amount
-    const signedValue = baseOriginalAmount < 0 ? -Math.abs(parsedValue) : Math.abs(parsedValue);
+    const signedValue =
+      baseOriginalAmount < 0 ? -Math.abs(parsedValue) : Math.abs(parsedValue);
     // Format and update the input value
     return signedValue.toFixed(2);
   };
@@ -85,7 +92,7 @@ export default function EditableTransactionSplit({
   // Event Handlers
   const handleDateSelect = (date: Date | null) => {
     if (date) {
-      const formattedDate = format(date, 'yyyy-MM-dd');
+      const formattedDate = format(date, "yyyy-MM-dd");
       if (validateDate(formattedDate)) {
         onUpdate({ transactionDate: formattedDate });
       } else {
@@ -97,7 +104,8 @@ export default function EditableTransactionSplit({
   // Event handler for when clicking off of amount input
   const handleAmountBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedAmount = formatAmount(e.target.value.trim());
-    if (transaction.amount !== formattedAmount) onUpdate({ amount: formattedAmount });
+    if (transaction.amount !== formattedAmount)
+      onUpdate({ amount: formattedAmount });
   };
 
   const parsedDate = (dateString: string): Date | null => {
@@ -158,10 +166,12 @@ export default function EditableTransactionSplit({
           <SubcategorySelector
             categories={categories}
             currentSubcategory={transaction.subcategory}
-            onChange={(subcategory) => onSubcategoryUpdate({
-              id: subcategory.id,
-              name: subcategory.name
-            })}
+            onChange={(subcategory) =>
+              onSubcategoryUpdate({
+                id: subcategory.id,
+                name: subcategory.name,
+              })
+            }
             hasError={subcategoryErrorMessage !== null}
           />
         </ErrorBadge>
@@ -199,6 +209,6 @@ export default function EditableTransactionSplit({
           &times;
         </button>
       </td>
-    </tr >
+    </tr>
   );
 }

@@ -1,19 +1,19 @@
 import { BarsArrowDownIcon } from "@heroicons/react/24/outline";
 import { Transaction } from "@/lib/definitions";
-import { formatCurrency, formatDate } from '@/lib/helpers';
+import { formatCurrency, formatDate } from "@/lib/helpers";
 import clsx from "clsx";
-import { amountClass } from "../../transaction-helpers";
+import { amountClass } from "@/lib/style-helpers";
 
 interface TransactionRowProps {
   transaction: Transaction;
   onClick?: (event: React.MouseEvent<HTMLTableRowElement>) => void;
   isInteractive?: boolean;
-};
+}
 
 export default function TransactionRow({
   transaction,
   onClick,
-  isInteractive = true
+  isInteractive = true,
 }: TransactionRowProps) {
   return (
     <tr
@@ -45,7 +45,8 @@ export default function TransactionRow({
 
       {/* Amount */}
       <td
-        className={clsx("w-24 p-2 align-top whitespace-nowrap font-mono",
+        className={clsx(
+          "w-24 p-2 align-top whitespace-nowrap font-mono",
           amountClass(transaction.amount)
         )}
       >
@@ -53,7 +54,7 @@ export default function TransactionRow({
       </td>
 
       {/* Expand button */}
-      { isInteractive && (
+      {isInteractive && (
         <td className="w-4 whitespace-nowrap">
           <BarsArrowDownIcon className="w-4 h-4" />
         </td>

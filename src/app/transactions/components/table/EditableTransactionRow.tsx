@@ -1,24 +1,24 @@
-import { useEffect, useState } from 'react';
-import clsx from 'clsx';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { ThreeDots } from 'react-loader-spinner';
-import { parseISO } from 'date-fns';
+import { useEffect, useState } from "react";
+import clsx from "clsx";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { ThreeDots } from "react-loader-spinner";
+import { parseISO } from "date-fns";
 import { Category, Transaction, TransactionUpdate } from "@/lib/definitions";
-import { formatCurrency } from '@/lib/helpers';
-import SubcategorySelector from '@/components/category/SubcategorySelector';
-import { amountClass } from '../../transaction-helpers';
+import { formatCurrency } from "@/lib/helpers";
+import SubcategorySelector from "@/components/category/SubcategorySelector";
+import { amountClass } from "@/lib/style-helpers";
 
 interface EditableTransactionRowProps {
   transaction: Transaction;
   categories: Category[];
   onUpdateTransaction: (transactionId: number, data: TransactionUpdate) => void;
-};
+}
 
 export default function EditableTransactionRow({
   transaction,
   categories,
-  onUpdateTransaction
+  onUpdateTransaction,
 }: EditableTransactionRowProps) {
   const [description, setDescription] = useState(transaction.description);
   const [isDescriptionLoading, setIsDescriptionLoading] = useState(false);
@@ -29,27 +29,31 @@ export default function EditableTransactionRow({
     setIsDescriptionSaved(isSaved);
   }, [description, transaction.description]);
 
-  const handleDescriptionKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && !isDescriptionSaved) {
+  const handleDescriptionKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === "Enter" && !isDescriptionSaved) {
       handleSaveDescription();
     }
-  }
+  };
 
   // Event handler for when description is saved:
   const handleSaveDescription = async () => {
     setIsDescriptionLoading(true);
     onUpdateTransaction(transaction.id, { description: description });
     setIsDescriptionLoading(false);
-    setIsDescriptionSaved(true)
-  }
+    setIsDescriptionSaved(true);
+  };
 
   // Event handler for when date is selected:
   const handleDateSelect = (date: Date | null) => {
     if (date) {
-      const newDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+      const newDate = `${date.getFullYear()}-${
+        date.getMonth() + 1
+      }-${date.getDate()}`;
       onUpdateTransaction(transaction.id, { transactionDate: newDate });
     }
-  }
+  };
 
   const transactionDate = parseISO(transaction.transactionDate);
 
@@ -79,16 +83,20 @@ export default function EditableTransactionRow({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             onKeyDown={handleDescriptionKeyDown}
-            className={clsx("border p-1 flex-grow rounded-md h-full",
+            className={clsx(
+              "border p-1 flex-grow rounded-md h-full",
               isDescriptionSaved ? "border-gray-300" : "border-red-500"
             )}
-            style={{ outline: 'none' }}
+            style={{ outline: "none" }}
           />
           <button
             onClick={handleSaveDescription}
-            className={clsx("ml-2 p-1 w-[40px] h-full text-white text-sm rounded",
+            className={clsx(
+              "ml-2 p-1 w-[40px] h-full text-white text-sm rounded",
               "flex items-center justify-center",
-              isDescriptionSaved || isDescriptionLoading ? "bg-gray-400" : "bg-blue-500"
+              isDescriptionSaved || isDescriptionLoading
+                ? "bg-gray-400"
+                : "bg-blue-500"
             )}
             disabled={isDescriptionSaved || isDescriptionLoading}
           >
@@ -117,10 +125,12 @@ export default function EditableTransactionRow({
             categories={categories}
             currentSubcategory={{
               id: transaction.subcategory.id,
-              name: transaction.subcategory.name
+              name: transaction.subcategory.name,
             }}
             onChange={(subcategory) =>
-              onUpdateTransaction(transaction.id, { subcategoryId: subcategory.id })
+              onUpdateTransaction(transaction.id, {
+                subcategoryId: subcategory.id,
+              })
             }
           />
         </div>
@@ -128,7 +138,8 @@ export default function EditableTransactionRow({
 
       {/* Amount */}
       <td
-        className={clsx("w-24 px-2 align-center whitespace-nowrap font-mono",
+        className={clsx(
+          "w-24 px-2 align-center whitespace-nowrap font-mono",
           amountClass(transaction.amount)
         )}
       >
