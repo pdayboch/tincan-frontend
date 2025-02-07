@@ -1,32 +1,31 @@
-"use client"
-import { Suspense, useEffect, useState } from 'react';
+"use client";
+import { Suspense, useEffect, useState } from "react";
 import { PlusIcon } from "@heroicons/react/24/solid";
-import { Account, SupportedAccount, User } from '../../lib/definitions';
-import Filters from './AccountFilters';
-import AccountsTable from './table/AccountsTable';
+import { Account, SupportedAccount, User } from "../../lib/definitions";
+import AccountsTable from "./table/AccountsTable";
 import { Inter } from "next/font/google";
-import clsx from 'clsx';
-import AddAccountModal from './add-account-modal/AddAccountModal';
-import { fetchUsers } from '@/lib/api/user-api';
-import { createAccount, fetchAccounts } from '@/lib/api/account-api';
-const font = Inter({ weight: ["400"], subsets: ['latin'] });
+import clsx from "clsx";
+import AddAccountModal from "./add-account-modal/AddAccountModal";
+import { fetchUsers } from "@/lib/api/user-api";
+import { createAccount, fetchAccounts } from "@/lib/api/account-api";
+const font = Inter({ weight: ["400"], subsets: ["latin"] });
 
 function AccountsContent() {
   const [users, setUsers] = useState<User[]>([]);
-  const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(true)
+  const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(true);
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [isLoadingAccounts, setIsLoadingAccounts] = useState<boolean>(true)
+  const [isLoadingAccounts, setIsLoadingAccounts] = useState<boolean>(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // fetch and store all users
   useEffect(() => {
     setIsLoadingUsers(true);
     fetchUsers()
-      .then(data => {
+      .then((data) => {
         setUsers(data);
         setIsLoadingUsers(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         setUsers([]);
         setIsLoadingUsers(false);
@@ -37,15 +36,11 @@ function AccountsContent() {
   useEffect(() => {
     setIsLoadingAccounts(true);
     fetchAccounts()
-      .then(data => {
-        // Filter out accounts named "Cash" or without an accountType
-        const filteredAccounts = data.filter(
-          (account: Account) => account.name !== "Cash" && account.accountType
-        );
-        setAccounts(filteredAccounts);
+      .then((data) => {
+        setAccounts(data);
         setIsLoadingAccounts(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         setAccounts([]);
         setIsLoadingAccounts(false);
@@ -74,7 +69,7 @@ function AccountsContent() {
       if (error instanceof Error) {
         console.error(`Error adding account ${error.message}`);
       } else {
-        console.log('Error adding account: An unknown error occurred');
+        console.log("Error adding account: An unknown error occurred");
       }
       return false;
     }
@@ -86,12 +81,6 @@ function AccountsContent() {
 
   return (
     <div className={clsx("flex", font.className)}>
-      {/* Left panel */}
-      <div className="block flex-none w-40 mr-3">
-        <Filters accounts={accounts} users={users} />
-      </div>
-
-      {/* Content */}
       <div className="flex-grow flex flex-col items-center w-full mx-auto max-w-4xl">
         <button
           className="flex flex-none items-center justify-center h-10 w-64 mb-5 \
@@ -112,11 +101,7 @@ function AccountsContent() {
           />
         )}
 
-        <AccountsTable
-          accounts={accounts}
-          users={users}
-          setAccounts={setAccounts}
-        />
+        <AccountsTable accounts={accounts} users={users} />
       </div>
     </div>
   );

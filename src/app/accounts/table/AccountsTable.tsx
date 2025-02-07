@@ -1,126 +1,37 @@
+import AccountsTableTypeSection from "./AccountsTableTypeSection";
 import { Account, AccountUpdate, User } from "@/lib/definitions";
-import AccountSubRow from "./AccountSubRow";
-import { useEffect, useState } from "react";
 import { deleteAccount, updateAccount } from "@/lib/api/account-api";
 
-type AccountsTableProps = {
+interface AccountsTableProps {
   accounts: Account[];
   users: User[];
-  setAccounts: React.Dispatch<React.SetStateAction<Account[]>>;
 }
 
-type GroupedAccounts = {
-  institutionName: string,
-  userId: string,
-  accounts: Account[]
-}
-
-type GroupedAccountsMap = {
-  [bankName: string]: { [userId: string]: Account[] }
-};
-
-// Takes the accounts array and groups them by bankName and userId.
-// example return { Chase: { 2: [Account1] } } }
-const groupAccountsByBankAndUser = (accounts: Account[]): GroupedAccountsMap => {
-  const grouped: { [institutionName: string]: { [userId: string]: Account[] } } = {};
-
-  accounts.forEach(account => {
-    if (!grouped[account.institutionName]) {
-      grouped[account.institutionName] = {};
-    }
-
-    if (!grouped[account.institutionName][account.userId]) {
-      grouped[account.institutionName][account.userId] = [];
-    }
-    grouped[account.institutionName][account.userId].push(account);
-  });
-
-  return grouped;
-};
-
-// Sorts an array of accounts by their name property
-const sortAccountsByName = (accounts: Account[]): Account[] => {
-  return accounts.sort((a, b) => a.name.localeCompare(b.name));
-};
-
-// Converts a grouped accounts object into an array of GroupedAccounts
-// while also sorting the accounts within each group
-const convertGroupedToArray = (
-  grouped: { [institutionName: string]: { [userId: string]: Account[] } }
-): GroupedAccounts[] => {
-  const result: GroupedAccounts[] = [];
-
-  Object.keys(grouped).forEach(institutionName => {
-    Object.keys(grouped[institutionName]).forEach(userId => {
-      // Sort the accounts by account name before pushing to result
-      const sortedAccounts = sortAccountsByName(grouped[institutionName][userId]);
-
-      result.push({
-        institutionName,
-        userId,
-        accounts: sortedAccounts
-      });
-    });
-  });
-
-  return result;
-};
-
-export default function AccountsTable({
-  accounts,
-  users,
-  setAccounts
-}: AccountsTableProps) {
-  const [groupedAccounts, setGroupedAccounts] = useState<GroupedAccounts[]>([]);
-
-  useEffect(() => {
-    const groupAndSortAccounts = (): GroupedAccounts[] => {
-      const filteredAccounts = accounts.filter(account => account.name !== "Cash");
-      const groupedAccounts = groupAccountsByBankAndUser(filteredAccounts);
-      const result = convertGroupedToArray(groupedAccounts);
-
-      // Sort the result array by bankName and then by userId
-      result.sort((a, b) => {
-        if (a.institutionName < b.institutionName) return -1;
-        if (a.institutionName > b.institutionName) return 1;
-        if (a.userId < b.userId) return -1;
-        if (a.userId > b.userId) return 1;
-        return 0;
-      });
-
-      return result;
-    };
-
-    setGroupedAccounts(groupAndSortAccounts());
-  }, [accounts])
-
+export default function AccountsTable({ accounts, users }: AccountsTableProps) {
   const updateAccountInState = (updatedAccount: Account) => {
     const updatedAccounts = accounts.map((account) => {
       if (account.id === updatedAccount.id) {
         return updatedAccount;
       }
-      return account
+      return account;
     });
 
-    setAccounts(updatedAccounts);
-  }
+    //setAccounts(updatedAccounts);
+  };
 
   const handleUpdateAccount = async (
     accountId: string,
     data: AccountUpdate
   ): Promise<boolean> => {
     try {
-      const updatedAccount = await updateAccount(
-        accountId,
-        data
-      )
-      updateAccountInState(updatedAccount)
+      const updatedAccount = await updateAccount(accountId, data);
+      updateAccountInState(updatedAccount);
       return true;
     } catch (error) {
       if (error instanceof Error) {
         console.error(`Error updating account data: ${error.message}`);
       } else {
-        console.log('Error updating account: An unknown error occurred');
+        console.log("Error updating account: An unknown error occurred");
       }
       return false;
     }
@@ -128,77 +39,43 @@ export default function AccountsTable({
 
   const handleDeleteAccount = async (accountId: string): Promise<boolean> => {
     try {
-      const success = await deleteAccount(accountId)
+      const success = await deleteAccount(accountId);
       if (success) {
-        const updatedAccounts = accounts.filter(account => account.id != accountId);
-        setAccounts(updatedAccounts);
+        const updatedAccounts = accounts.filter(
+          (account) => account.id != accountId
+        );
+        // setAccounts(updatedAccounts);
       }
       return success;
     } catch (error) {
       if (error instanceof Error) {
         console.error(`Error deleting account data: ${error.message}`);
       } else {
-        console.log('Error deleting account: An unknown error occurred');
+        console.log("Error deleting account: An unknown error occurred");
       }
       return false;
     }
   };
 
-  const shouldDisplayUser = users.length > 1;
+  const accountsByType = accounts.reduce((acc, account) => {
+    if (!acc[account.accountType]) {
+      acc[account.accountType] = [];
+    }
+
+    acc[account.accountType].push(account);
+    return acc;
+  }, {} as Record<string, Account[]>);
 
   return (
-    <div className="w-full overflow-x-auto rounded-lg bg-gray-50 p-2">
-      <table className="w-full text-gray-900">
-        <thead className="rounded-lg text-left text-md font-normal">
-          <tr>
-            <th className="px-4 py-2 text-left font-medium">Bank</th>
-            <th className="px-4 py-2 text-left font-medium">Accounts</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {groupedAccounts.map((bankAndUser) => {
-            const user = shouldDisplayUser ?
-              (users.find(user => user.id === bankAndUser.userId) || null) :
-              null;
-
-            return (
-              <tr
-                key={`${bankAndUser.institutionName}${bankAndUser.userId}`}
-                className="bg-white w-full border-b text-sm \
-                    last-of-type:border-none \
-                    [&:first-child>td:first-child]:rounded-tl-lg \
-                    [&:first-child>td:last-child]:rounded-tr-lg \
-                    [&:last-child>td:first-child]:rounded-bl-lg \
-                    [&:last-child>td:last-child]:rounded-br-lg"
-              >
-                <td className="px-4 py-2 border-b border-gray-300 align-top">
-                  <div>
-                    {bankAndUser.institutionName}
-                    {user && (
-                      <div className="text-md text-gray-500">
-                        {user.name}
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td className="px-4 py-2 border-b border-gray-300">
-                  <div className="text-md">
-                    {bankAndUser.accounts.map(account => (
-                      <AccountSubRow
-                        key={account.id}
-                        account={account}
-                        onUpdateAccount={handleUpdateAccount}
-                        onDeleteAccount={handleDeleteAccount}
-                      />
-                    ))}
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+    <div className="space-y-6 w-full">
+      {Object.entries(accountsByType).map(([accountType, accounts]) => (
+        <AccountsTableTypeSection
+          key={accountType}
+          accountType={accountType}
+          accounts={accounts}
+          users={users}
+        />
+      ))}
     </div>
   );
 }
