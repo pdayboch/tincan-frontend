@@ -51,7 +51,7 @@ function AccountsContent() {
     setIsAddModalOpen(true);
   };
 
-  const handleAddAccount = async (
+  const handleAddManualAccount = async (
     accountProvider: SupportedAccount,
     userId: string,
     statementDirectory: string
@@ -96,7 +96,7 @@ function AccountsContent() {
         {isAddModalOpen && (
           <AddAccountModal
             users={users}
-            onAddAccount={handleAddAccount}
+            onAddManualAccount={handleAddManualAccount}
             onCloseModal={handleCloseModal}
           />
         )}
