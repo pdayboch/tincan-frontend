@@ -5,6 +5,7 @@ import ManualAccountDetailsScreen from "./screens/ManualAccountDetailsScreen";
 import { fetchSupportedAccounts } from "@/lib/api/account-api";
 import HowToAddAccountScreen from "./screens/HowToAddAccountScreen";
 import { XMarkIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
+import PlaidLink from "../plaid/PlaidLink";
 
 enum ModalScreen {
   HOW_TO_ADD = "HOW_TO_ADD",
@@ -22,12 +23,14 @@ interface AddAccountModalProps {
     userId: string,
     statementDirectory: string
   ) => void;
+  onAddPlaidAccount: () => void;
   onCloseModal: () => void;
 }
 
 export default function AddAccountModal({
   users,
   onAddManualAccount,
+  onAddPlaidAccount,
   onCloseModal,
 }: AddAccountModalProps) {
   const [currentScreen, setCurrentScreen] = useState<ModalScreen>(
@@ -89,6 +92,9 @@ export default function AddAccountModal({
         setCurrentScreen(ModalScreen.ACCOUNT_PICKER);
         setSelectedManualAccount(null);
         break;
+      case ModalScreen.PLAID_LINK:
+        setCurrentScreen(ModalScreen.HOW_TO_ADD);
+        break;
       default:
         break;
     }
@@ -123,7 +129,14 @@ export default function AddAccountModal({
           />
         );
       case ModalScreen.PLAID_LINK:
-        return <div>Todo</div>;
+        return (
+          <PlaidLink
+            userId={users[0].id}
+            onAccountAdd={onAddPlaidAccount}
+            onCancel={handleBack}
+            onClose={handleCloseModal}
+          />
+        );
     }
   };
   return (

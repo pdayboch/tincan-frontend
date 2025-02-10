@@ -12,40 +12,36 @@ const font = Inter({ weight: ["400"], subsets: ["latin"] });
 
 function AccountsContent() {
   const [users, setUsers] = useState<User[]>([]);
-  const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(true);
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [isLoadingAccounts, setIsLoadingAccounts] = useState<boolean>(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // fetch and store all users
   useEffect(() => {
-    setIsLoadingUsers(true);
     fetchUsers()
       .then((data) => {
         setUsers(data);
-        setIsLoadingUsers(false);
       })
       .catch((error) => {
         console.error(error);
         setUsers([]);
-        setIsLoadingUsers(false);
       });
   }, []);
 
   // fetch and store all accounts
   useEffect(() => {
-    setIsLoadingAccounts(true);
-    fetchAccounts()
-      .then((data) => {
-        setAccounts(data);
-        setIsLoadingAccounts(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setAccounts([]);
-        setIsLoadingAccounts(false);
-      });
+    fetchAndSetAccounts();
   }, []);
+
+  const fetchAndSetAccounts = async () => {
+    try {
+      const updatedAccounts = await fetchAccounts();
+      setAccounts(updatedAccounts);
+    } catch (error) {
+      setAccounts([]);
+      setError("Error fetching accounts");
+    }
+  };
 
   const handleAddAccountClick = () => {
     setIsAddModalOpen(true);
@@ -79,6 +75,16 @@ function AccountsContent() {
     setIsAddModalOpen(false);
   };
 
+  if (error) {
+    return (
+      <div className="flex justify-center">
+        <div className="px-7 py-3 border border-red-700 rounded-xl max-w-3xl bg-red-100/50 text-center">
+          <span className="text-red-700 text-lg">{error}</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={clsx("flex", font.className)}>
       <div className="flex-grow flex flex-col items-center w-full mx-auto max-w-4xl">
@@ -97,6 +103,7 @@ function AccountsContent() {
           <AddAccountModal
             users={users}
             onAddManualAccount={handleAddManualAccount}
+            onAddPlaidAccount={fetchAndSetAccounts}
             onCloseModal={handleCloseModal}
           />
         )}

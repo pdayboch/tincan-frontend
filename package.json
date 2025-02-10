@@ -19,6 +19,7 @@
     "react-datepicker": "^7.5.0",
     "react-dom": "^18",
     "react-loader-spinner": "^6.1.6",
+    "react-plaid-link": "^3.6.1",
     "react-select": "^5.8.3",
     "recharts": "^2.13.3",
     "use-debounce": "^10.0.4"
