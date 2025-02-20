@@ -1,13 +1,11 @@
 import { getBaseApiUrl } from "@/utils/api-utils";
 
 export type PlaidSetAccessTokenResponse = {
-  detailsJobId: string;
-  syncAccountsJobId: string;
+  jobId: string;
 };
 
-export type PlaidItemInitializationJobStatusesResponse = {
-  detailsJobStatus: "pending" | "completed" | "failed";
-  syncAccountsJobStatus: "pending" | "completed" | "failed";
+export type PlaidItemInitializationJobStatusResponse = {
+  status: "pending" | "completed" | "failed";
 };
 
 export async function plaidCreateLinkToken(userId: string): Promise<string> {
@@ -47,13 +45,13 @@ export async function plaidSetAccessToken(
   return data;
 }
 
-export async function plaidFetchItemInitializationJobStatuses(
+export async function plaidFetchItemInitializationJobStatus(
   jobIds: PlaidSetAccessTokenResponse
-): Promise<PlaidItemInitializationJobStatusesResponse> {
+): Promise<PlaidItemInitializationJobStatusResponse> {
   const queryParams = new URLSearchParams(
     jobIds as Record<string, string>
   ).toString();
-  const url = `${getBaseApiUrl()}/api/v1/plaid/item-initialization-job-statuses?${queryParams}`;
+  const url = `${getBaseApiUrl()}/api/v1/plaid/item-initialization-job-status?${queryParams}`;
 
   const response = await fetch(url, {
     method: "GET",
@@ -64,11 +62,10 @@ export async function plaidFetchItemInitializationJobStatuses(
 
   if (!response.ok) {
     throw new Error(
-      `Error fetching Plaid initialization job statuses: ${response.status}`
+      `Error fetching Plaid initialization job status: ${response.status}`
     );
   }
 
-  const data: PlaidItemInitializationJobStatusesResponse =
-    await response.json();
+  const data: PlaidItemInitializationJobStatusResponse = await response.json();
   return data;
 }

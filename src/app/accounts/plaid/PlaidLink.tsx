@@ -6,7 +6,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import {
   plaidCreateLinkToken,
-  plaidFetchItemInitializationJobStatuses,
+  plaidFetchItemInitializationJobStatus,
   plaidSetAccessToken,
   PlaidSetAccessTokenResponse,
 } from "@/lib/api/plaid-api";
@@ -24,9 +24,8 @@ type PlaidLinkProps = {
   onClose: () => void;
 };
 
-type JobStatuses = {
-  detailsJobStatus: "pending" | "completed" | "failed";
-  syncAccountsJobStatus: "pending" | "completed" | "failed";
+type JobStatus = {
+  status: "pending" | "completed" | "failed";
 };
 
 export default function PlaidLink({
@@ -37,7 +36,7 @@ export default function PlaidLink({
 }: PlaidLinkProps) {
   const [linkToken, setLinkToken] = useState<string>("");
   const [isPolling, setIsPolling] = useState(false);
-  const [jobStatuses, setJobStatuses] = useState<JobStatuses | null>(null);
+  const [jobStatus, setJobStatus] = useState<JobStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const intervalRef = useRef<NodeJS.Timeout>();
 
@@ -70,13 +69,10 @@ export default function PlaidLink({
 
     intervalRef.current = setInterval(async () => {
       try {
-        const statuses = await plaidFetchItemInitializationJobStatuses(jobs);
-        setJobStatuses(statuses);
+        const resp = await plaidFetchItemInitializationJobStatus(jobs);
+        setJobStatus(resp);
 
-        if (
-          statuses.detailsJobStatus === "failed" ||
-          statuses.syncAccountsJobStatus == "failed"
-        ) {
+        if (resp.status == "failed") {
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
           }
@@ -86,10 +82,7 @@ export default function PlaidLink({
           );
         }
 
-        if (
-          statuses.detailsJobStatus === "completed" &&
-          statuses.syncAccountsJobStatus === "completed"
-        ) {
+        if (resp.status === "completed") {
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
           }
@@ -122,17 +115,11 @@ export default function PlaidLink({
     onCancel();
   };
 
-  let isOauth = false;
   const config: Parameters<typeof usePlaidLink>[0] = {
     token: linkToken,
     onSuccess: onLinkSuccess,
     onExit: onLinkExit,
   };
-
-  if (params.toString().includes("oauth_state_id")) {
-    config.receivedRedirectUri = `${pathname}?${params.toString()}`;
-    isOauth = true;
-  }
 
   const { open, ready } = usePlaidLink(config);
 
@@ -151,14 +138,14 @@ export default function PlaidLink({
     );
   }
 
-  if (isPolling || jobStatuses) {
+  if (isPolling || jobStatus) {
     return (
-      <div className="flex flex-col items-center space-y-6 p-6">
+      <div className="flex flex-col items-center space-y-8 p-6">
         <div className="space-y-4 w-full max-w-md">
           {/* Bank Information Status */}
           <div className="flex items-center justify-between">
             <span className="text-gray-700">Pulling bank information</span>
-            {jobStatuses?.detailsJobStatus === "completed" ? (
+            {jobStatus?.status === "completed" ? (
               <CheckCircleIcon className="h-6 w-6 text-green-500" />
             ) : (
               <ArrowPathIcon className="h-6 w-6 animate-spin text-blue-500" />
@@ -168,28 +155,38 @@ export default function PlaidLink({
           {/* Account Sync Status */}
           <div className="flex items-center justify-between">
             <span className="text-gray-700">Syncing account information</span>
-            {jobStatuses?.syncAccountsJobStatus === "completed" ? (
+            {jobStatus?.status === "completed" ? (
               <CheckCircleIcon className="h-6 w-6 text-green-500" />
             ) : (
               <ArrowPathIcon className="h-6 w-6 animate-spin text-blue-500" />
             )}
           </div>
-        </div>
 
-        {jobStatuses?.detailsJobStatus === "completed" &&
-          jobStatuses?.syncAccountsJobStatus === "completed" && (
-            <div className="flex flex-col items-center space-y-4">
-              <p className="text-green-600 font-medium">
-                Institution linked successfully
-              </p>
-              <button
-                onClick={onClose}
-                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
-              >
-                Close
-              </button>
+          {/* Link success message */}
+          {jobStatus?.status === "completed" && (
+            <div className="flex items-center justify-between">
+              <span className="text-green-600">
+                Institution linked successfully.
+              </span>
+              <CheckCircleIcon className="h-6 w-6 text-green-500" />
             </div>
           )}
+        </div>
+
+        {jobStatus?.status === "completed" && (
+          <div className="flex flex-col items-center space-y-4">
+            <p className="text-gray-700 font-medium">
+              Transactions will be synced within five minutes. You may close
+              this window.
+            </p>
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+            >
+              Close
+            </button>
+          </div>
+        )}
       </div>
     );
   }
