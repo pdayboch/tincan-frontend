@@ -1,5 +1,7 @@
 export const getBaseApiUrl = (): string => {
-  if (process.env.NODE_ENV === 'production') return 'http://api.tincan.com'
+  // TODO: Make this a build time variable but i'm in a rush so leaving this hardcoded.
+  if (process.env.NODE_ENV === "production")
+    return "http://api.tincan.dayboch.com";
 
-  return 'http://api.localhost';
+  return "http://api.localhost";
 };
