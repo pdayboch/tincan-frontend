@@ -1,31 +1,29 @@
 import { User } from "@/lib/definitions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import Select, { MultiValue } from 'react-select';
+import Select, { MultiValue } from "react-select";
 
 interface UserFilterProps {
   users: User[];
 }
 
 type OptionType = {
-  id: number,
-  value: number,
-  label: string
+  id: string;
+  value: string;
+  label: string;
 };
 
-const PARAM_NAME = 'users[]';
+const PARAM_NAME = "users[]";
 
-export default function UserFilter({
-  users
-}: UserFilterProps) {
+export default function UserFilter({ users }: UserFilterProps) {
   const [selectedUsers, setSelectedUsers] = useState<OptionType[]>([]);
   const userOptions = useMemo(() => {
     return users.map((user) => ({
-    id: user.id,
-    value: user.id,
-    label: user.name,
-  }))
-}, [users]);
+      id: user.id,
+      value: user.id,
+      label: user.name,
+    }));
+  }, [users]);
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -33,34 +31,29 @@ export default function UserFilter({
 
   useEffect(() => {
     const param = searchParams.getAll(PARAM_NAME);
-    const newSelectedUsers = userOptions.filter(options =>
+    const newSelectedUsers = userOptions.filter((options) =>
       param.includes(String(options.value))
     );
 
     setSelectedUsers(newSelectedUsers);
   }, [searchParams, userOptions]);
 
-
-  const handleSelectionChange = (
-    selectedOptions: MultiValue<OptionType>
-  ) => {
+  const handleSelectionChange = (selectedOptions: MultiValue<OptionType>) => {
     const params = new URLSearchParams(searchParams);
     // Reset pagination to page 1
-    params.delete('startingAfter');
-    params.delete('endingBefore');
+    params.delete("startingAfter");
+    params.delete("endingBefore");
 
     // Update url param
     if (selectedOptions.length > 0) {
-      const selectedIds = selectedOptions.map(option =>
-        String(option.value)
-      );
+      const selectedIds = selectedOptions.map((option) => String(option.value));
       params.delete(PARAM_NAME);
-      selectedIds.forEach(id => params.append(PARAM_NAME, id))
+      selectedIds.forEach((id) => params.append(PARAM_NAME, id));
     } else {
       params.delete(PARAM_NAME);
     }
 
-    replace(`${pathname}?${params.toString()}`)
+    replace(`${pathname}?${params.toString()}`);
   };
 
   return (
